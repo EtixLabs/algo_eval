@@ -4,10 +4,11 @@ import collections
 import os.path
 
 # input parameters
+cam_id = 1
 tolerance = 100  # merge events being apart less or equal than this number of frames
 print_flag = False  # if False, avoid printing
 dataset_path = "/samples/CASA/videos/"  # dataset's root directory
-filelist = "/samples/CASA/gt/gt_cam15.txt"  # list of videos & event frames
+filelist = "/samples/CASA/gt/gt_cam" + str(cam_id).zfill(2) + ".txt"  # list of videos & event frames
 
 # Open file with list of frames with event(s)
 file_cam = open(filelist, "r")
@@ -23,7 +24,7 @@ paths = {}
 for line in file_cam:
     #  Extract video filename and frame number
     line = line.strip()
-    parts = line.split("/")
+    parts = line.split(os.sep)
     sz = len(parts)
     video_fname = parts[sz-3]  # video_filenmame.mp4
     fr_name = parts[sz-1]  # frame_xxx.png
@@ -81,11 +82,14 @@ for key in videos.keys():
 
     # Write ground truth file
     path = dataset_path
+    print(paths[key])
     path_parts = paths[key]
     for i in range(0, len(path_parts)-3):
-        path = path + path_parts[i] + "/"
+        path = path + path_parts[i] + os.sep
     gt_fname = key[:-3] + "txt"
     # Create file at the same directory as the video file
+    print(path)
+    print(gt_fname)
     gt_file = open(path + gt_fname, "w")
     # Format ground truth as: START_FRAME END_FRAME DURATION
     prev_val = seqfill[0]
