@@ -20,6 +20,7 @@ def load_gt(gt_path):
     for line in gt_file:
         line = line.strip()
         gt_fnames.append(line)
+    print("loaded " + str(len(gt_fnames)) + " gt frames")
     return gt_fnames
 
 
@@ -69,6 +70,11 @@ def escapeKey(event):
     window.destroy()
 
 
+def fastPrevKey(event):
+    idx.set(idx.get() - 1000)
+    show_image(idx.get())
+
+
 def prevKey(event):
     idx.set(idx.get() - 1)
     show_image(idx.get())
@@ -76,6 +82,11 @@ def prevKey(event):
 
 def nextKey(event):
     idx.set(idx.get() + 1)
+    show_image(idx.get())
+
+
+def fastNextKey(event):
+    idx.set(idx.get() + 1000)
     show_image(idx.get())
 
 
@@ -117,8 +128,10 @@ def deleteKey(event):
 
 
 window.bind_all('<Escape>', escapeKey)
+window.bind_all('<Control-Left>', fastPrevKey)
 window.bind_all('<Left>', prevKey)
 window.bind_all('<Right>', nextKey)
+window.bind_all('<Control-Right>', fastNextKey)
 window.bind_all('<s>', saveKey)
 window.bind_all('<S>', saveKey)
 window.bind_all('<d>', deleteKey)
@@ -129,7 +142,7 @@ window.mainloop()
 
 #~ print(gt_fnames)
 
-file_cam_gt = open(output_filename, "a+")
+file_cam_gt = open(output_filename, "w+")
 for fname in gt_fnames:
     file_cam_gt.write(fname + "\n")
 file_cam_gt.close()
