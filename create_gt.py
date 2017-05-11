@@ -82,14 +82,11 @@ for key in videos.keys():
 
     # Write ground truth file
     path = dataset_path
-    print(paths[key])
     path_parts = paths[key]
     for i in range(0, len(path_parts)-3):
         path = path + path_parts[i] + os.sep
     gt_fname = key[:-3] + "txt"
     # Create file at the same directory as the video file
-    print(path)
-    print(gt_fname)
     gt_file = open(path + gt_fname, "w")
     # Format ground truth as: START_FRAME END_FRAME DURATION
     prev_val = seqfill[0]
