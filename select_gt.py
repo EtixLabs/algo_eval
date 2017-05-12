@@ -5,7 +5,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 
-cam_id = 1
+cam_id = 15
 root_dir = "/home/tanman/work/dev/test_samples/eval/2017-05-06T20:33:53_valCASA_det100/samples/CASA/videos/"
 
 cam_dir = root_dir + str(cam_id)
@@ -46,7 +46,9 @@ for root, dirs, files in os.walk(cam_dir):
         if os.path.split(root)[1] == "FP" and filename.endswith((".png")):
             path = root.split(os.sep)[-6:]  # keep path as 'cam_id/year/month/day/video_filename/FP/frame_XXXXX.png'
             FPs.append(os.path.join(*path, filename))
-
+if len(FPs) == 0:
+    print("No FP images were found")
+    exit()
 FPs.sort()
 
 window = tk.Tk()
@@ -112,7 +114,7 @@ def saveKey(event):
         gt_fnames.append(fname)
         print("saved " + get_frame_name(fname))
     else:
-        print(get_frame_name(fname) + " already added")
+        print(get_frame_name(fname) + " has been already added")
     nextKey(event)
 
 
@@ -123,7 +125,7 @@ def deleteKey(event):
         gt_fnames.remove(fname)
         print("removed " + get_frame_name(fname))
     else:
-        print(get_frame_name(fname) + " not in the list")
+        print(get_frame_name(fname) + " is not in the ground truth list")
     nextKey(event)
 
 
