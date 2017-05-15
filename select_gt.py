@@ -5,13 +5,14 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 
-cam_id = 15
-root_dir = "/home/tanman/work/dev/test_samples/eval/2017-05-06T20:33:53_valCASA_det100/samples/CASA/videos/"
+cam_id = 14
+root_dir = "/home/tanman/work/dev/test_samples/eval/2017-05-12T20:54:23_cam14CASA_det20/samples/CASA/videos/"
+err_type = "FP" #  "FP" or "FN"
 
 cam_dir = root_dir + str(cam_id)
 output_filename = "/samples/CASA/gt/gt_cam" + str(cam_id).zfill(2) + ".txt"
 check_icon = Image.open("transparent-green-checkmark-md.png")
-FPs = []
+new_gt = []
 
 
 def load_gt(gt_path):
@@ -41,21 +42,22 @@ def get_frame_id(filename):
 
 
 gt_fnames = load_gt(output_filename)
+print(cam_dir)
 for root, dirs, files in os.walk(cam_dir):
     for filename in files:
-        if os.path.split(root)[1] == "FP" and filename.endswith((".png")):
+        if os.path.split(root)[1] == err_type and filename.endswith((".png")):
             path = root.split(os.sep)[-6:]  # keep path as 'cam_id/year/month/day/video_filename/FP/frame_XXXXX.png'
-            FPs.append(os.path.join(*path, filename))
-if len(FPs) == 0:
-    print("No FP images were found")
+            new_gt.append(os.path.join(*path, filename))
+if len(new_gt) == 0:
+    print("No " + err_type + " images were found")
     exit()
-FPs.sort()
+new_gt.sort()
 
 window = tk.Tk()
 idx = tk.IntVar()
-img = ImageTk.PhotoImage(Image.open(root_dir + FPs[idx.get()]))
-window.title(FPs[idx.get()])
-print(get_video_name(FPs[0]) + "/" + get_frame_name(FPs[0]) + "\t" + str(1) + "/" + str(len(FPs)))
+img = ImageTk.PhotoImage(Image.open(root_dir + new_gt[idx.get()]))
+window.title(new_gt[idx.get()])
+print(get_video_name(new_gt[0]) + "/" + get_frame_name(new_gt[0]) + "\t" + str(1) + "/" + str(len(new_gt)))
 
 # make the window the size of the image
 window.geometry("%dx%d+%d+%d" % (img.width(), img.height(), 0, 0))
@@ -93,9 +95,9 @@ def fastNextKey(event):
 
 
 def show_image(id):
-    img_id = id % len(FPs)
-    image_fname = FPs[img_id]
-    print(get_video_name(image_fname) + "/" + get_frame_name(image_fname) + "\t" + str(img_id+1) + "/" + str(len(FPs)))
+    img_id = id % len(new_gt)
+    image_fname = new_gt[img_id]
+    print(get_video_name(image_fname) + "/" + get_frame_name(image_fname) + "\t" + str(img_id+1) + "/" + str(len(new_gt)))
     window.title(image_fname)
     img = Image.open(root_dir + image_fname)
     if image_fname in gt_fnames:
@@ -108,7 +110,7 @@ def show_image(id):
 
 
 def saveKey(event):
-    fname = FPs[idx.get() % len(FPs)]
+    fname = new_gt[idx.get() % len(new_gt)]
     fr_id = get_frame_id(fname)
     if fname not in gt_fnames:
         gt_fnames.append(fname)
@@ -118,8 +120,15 @@ def saveKey(event):
     nextKey(event)
 
 
+def saveAllKey(event):
+    for fname in new_gt:
+        if fname not in gt_fnames:
+            gt_fnames.append(fname)
+    print("added all candidates in ground truth")
+
+
 def deleteKey(event):
-    fname = FPs[idx.get() % len(FPs)]
+    fname = new_gt[idx.get() % len(new_gt)]
     fr_id = get_frame_id(fname)
     if fname in gt_fnames:
         gt_fnames.remove(fname)
@@ -136,6 +145,7 @@ window.bind_all('<Right>', nextKey)
 window.bind_all('<Control-Right>', fastNextKey)
 window.bind_all('<s>', saveKey)
 window.bind_all('<S>', saveKey)
+window.bind_all('<Control-s>', saveAllKey)
 window.bind_all('<d>', deleteKey)
 window.bind_all('<D>', deleteKey)
 
