@@ -11,7 +11,7 @@ err_type = "FP" #  "FP" or "FN"
 
 cam_dir = root_dir + str(cam_id)
 output_filename = "/samples/CASA/gt/gt_cam" + str(cam_id).zfill(2) + ".txt"
-check_icon = Image.open("transparent-green-checkmark-md.png")
+check_icon = Image.open("resources/transparent-green-checkmark-md.png")
 new_gt = []
 
 
