@@ -119,7 +119,8 @@ for root, dirs, files in os.walk(results_path):
 
 #  Export results
 # *****************************
-rows = zip(["FPR"]+FPR, ["HR"]+HR, ["algorithm"]+algo, ["resize_factor"]+rsz, ["alpha"]+alpha, ["max_detectable_distance"]+dist, \
+rows = zip(["Frames"]+Frames, ["TP"]+TP, ["TN"]+TN, ["FP"]+FP, ["FN"]+FN, ["HR"]+HR, ["FPR"]+FPR, ["Acc"]+Acc, ["Pre"]+Pre,["F1"]+F1, \
+["Runtime"]+Runtime, ["algorithm"]+algo, ["resize_factor"]+rsz, ["alpha"]+alpha, ["max_detectable_distance"]+dist, \
 ["smooth_filt_size"]+sm_sz, ["post_filt_size"]+post_sz, ["bg_er_thresh"]+thresh)
 with open(os.path.join(results_path, "results.csv"), "w") as results_file:
     writer = csv.writer(results_file)
