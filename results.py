@@ -4,6 +4,7 @@ import os
 from pprint import pprint
 import matplotlib.pyplot as plt
 import json
+import csv
 import numpy as np
 
 
@@ -33,6 +34,7 @@ Acc = []
 Pre = []
 F1 = []
 Runtime = []
+algo = []
 rsz = []
 alpha = []
 dist = []
@@ -68,13 +70,13 @@ for root, dirs, files in os.walk(results_path):
                         if key == "Frames":
                             Frames.append(int(val))
                         elif key == "TP":
-                            TP.append(val)
+                            TP.append(int(val))
                         elif key == "TN":
-                            TN.append(val)
+                            TN.append(int(val))
                         elif key == "FP":
-                            FP.append(val)
+                            FP.append(int(val))
                         elif key == "FN":
-                            FN.append(val)
+                            FN.append(int(val))
                         elif key == "HR":
                             float_val = float(val[:-1])/100.0
                             HR.append(float_val)
@@ -99,13 +101,14 @@ for root, dirs, files in os.walk(results_path):
                 with open(os.path.join(root, filename), "r") as ecv_file:
                     text = ecv_file.read()
                     data = json.loads(text)
-                    algo = data["plugins"]["motion_detection"]["algorithm"]
+                    algo_ = data["plugins"]["motion_detection"]["algorithm"]
+                    algo.append(algo_)
                     rsz.append(data["plugins"]["motion_detection"]["configuration"]["resize_factor"])
                     alpha.append(data["plugins"]["motion_detection"]["configuration"]["alpha"])
                     dist.append(data["plugins"]["motion_detection"]["configuration"]["max_detectable_distance"])
                     sm_sz.append(data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"])
                     post_sz.append(data["plugins"]["motion_detection"]["configuration"]["post_filt_size"])
-                    thresh.append(data["plugins"]["motion_detection"]["configuration"][algo]["bg_er_thresh"])
+                    thresh.append(data["plugins"]["motion_detection"]["configuration"][algo_]["bg_er_thresh"])
             
             #  Make sure FPR and HR have same dimension
             if len(HR) > len(FPR):
@@ -113,6 +116,16 @@ for root, dirs, files in os.walk(results_path):
             if len(FPR) > len(HR):
                 del FPR[-1]
 
+
+#  Export results
+# *****************************
+rows = zip(["FPR"]+FPR, ["HR"]+HR, ["algorithm"]+algo, ["resize_factor"]+rsz, ["alpha"]+alpha, ["max_detectable_distance"]+dist, \
+["smooth_filt_size"]+sm_sz, ["post_filt_size"]+post_sz, ["bg_er_thresh"]+thresh)
+with open(os.path.join(results_path, "results.csv"), "w") as results_file:
+    writer = csv.writer(results_file)
+    for row in rows:
+        writer.writerow(row)
+    
 
 #  Process and plot the results
 # *****************************
