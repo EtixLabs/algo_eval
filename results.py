@@ -78,19 +78,19 @@ for root, dirs, files in os.walk(results_path):
                         elif key == "FN":
                             FN.append(int(val))
                         elif key == "HR":
-                            float_val = float(val[:-1])/100.0
+                            float_val = float(val[:-1])
                             HR.append(float_val)
                         elif key == "FPR":
-                            float_val = float(val[:-1])/100.0
+                            float_val = float(val[:-1])
                             FPR.append(float_val)
                         elif key == "Acc":
-                            float_val = float(val[:-1])/100.0
+                            float_val = float(val[:-1])
                             Acc.append(float_val)
                         elif key == "Pre":
-                            float_val = float(val[:-1])/100.0
+                            float_val = float(val[:-1])
                             Pre.append(float_val)
                         elif key == "F1":
-                            float_val = float(val[:-1])/100.0
+                            float_val = float(val[:-1])
                             F1.append(float_val)
                         elif key == "Runtime":
                             Runtime.append(int(val))
@@ -121,12 +121,12 @@ for root, dirs, files in os.walk(results_path):
 # *****************************
 rows = zip(["Frames"]+Frames, ["TP"]+TP, ["TN"]+TN, ["FP"]+FP, ["FN"]+FN, ["HR"]+HR, ["FPR"]+FPR, ["Acc"]+Acc, ["Pre"]+Pre,["F1"]+F1, \
 ["Runtime"]+Runtime, ["algorithm"]+algo, ["resize_factor"]+rsz, ["alpha"]+alpha, ["max_detectable_distance"]+dist, \
-["smooth_filt_size"]+sm_sz, ["post_filt_size"]+post_sz, ["bg_er_thresh"]+thresh)
+["smooth_filt_size"]+sm_sz, ["post_filt_size"]+post_sz, ["bg_er_thresh"]+thresh, ["folder"]+folders[1:])
 with open(os.path.join(results_path, "results.csv"), "w") as results_file:
     writer = csv.writer(results_file)
     for row in rows:
         writer.writerow(row)
-    
+
 
 #  Process and plot the results
 # *****************************
@@ -158,7 +158,7 @@ plt.title("ROC curve (" + str(len(HR)) + " tests)")
 plt.xlabel("FPR (%)")
 plt.ylabel("HR (%)")
 plt.grid(True)
-plt.axis([0, plt.xlim()[1], 0, 1])
+plt.axis([0, plt.xlim()[1], 0, 100])
 
 #~ for x_, y_, fps_ in np.broadcast(x, y, fps):
     #~ plt.annotate(fps_, (x_,y_))
