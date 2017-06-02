@@ -4,6 +4,7 @@ import os
 import json
 from pprint import pprint
 from threading import Thread
+import subprocess
 import time
 
 def run_eval(algorithm, resize_factor, alpha, mvt_tolerance, smooth_filter, smooth_filt_size, max_detectable_distance, min_obj_height, obj_ratio, \
@@ -34,7 +35,8 @@ post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thres
                                 editted_file.close()
                                 run_counter += 1
                                 print("Running test " + str(run_counter) + "/" + str(total_runs) + "...")
-                                os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json")
+                                #~ os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json")
+                                subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
 
 
 base_path = "/home/tanman/work/dev/dcim/cctv/cctv-server/"
@@ -60,10 +62,11 @@ post_filt_size = [7, 15]
 merge_algo = [1]
 merge_margin = [0.1]
 bg_er_thresh = [5, 15, 30]
+bg_dl_thresh = [30]
 
-for t in bg_er_thresh:
-    t = Thread(target=run_eval, args=(algorithm, resize_factor, alpha, mvt_tolerance, smooth_filter, smooth_filt_size, max_detectable_distance, \
-    min_obj_height, obj_ratio, post_filter, post_filt_size, merge_algo, merge_margin, [t], bg_dl_thresh,))
-    print("starting thread with bg_er_thresh=" + str(t))
+for a in alpha:
+    t = Thread(target=run_eval, args=(algorithm, resize_factor, [a], mvt_tolerance, smooth_filter, smooth_filt_size, max_detectable_distance, \
+    min_obj_height, obj_ratio, post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thresh,))
+    print("starting thread with alpha=" + str(a))
     t.start()
-    time.sleep(10)
+    time.sleep(60) #  wait 1' to make sure the correct ECV.json file will have been read
