@@ -39,7 +39,7 @@ post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thres
                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, smooth_filt_sz:%s, post_filt_sz:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_sz, ps_sz, thresh))
                                 #~ os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
                                 subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
-                                print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finisished") 
+                                print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished") 
 
 
 base_path = "/home/tanman/work/dev/dcim/cctv/cctv-server/"
@@ -47,7 +47,7 @@ eval_path = base_path + "build-release/tests/"
 conf_path = base_path + "deployment/conf/"
 data = []
 
-with open(conf_path + "ECV_base.json", "r") as data_file:
+with open(conf_path + "ECV.json", "r") as data_file:
     text = data_file.read()
     data = json.loads(text)
 
@@ -57,7 +57,7 @@ alpha = [0.05, 0.1, 0.2]
 mvt_tolerance = [0]
 smooth_filter = [1]
 smooth_filt_size =[7, 15]
-max_detectable_distance = [10, 25, 50]
+max_detectable_distance = [25, 50, 100]
 min_obj_height = [1.6]
 obj_ratio = [0.41]
 post_filter = [1]
@@ -74,4 +74,4 @@ for a in alpha:
         min_obj_height, obj_ratio, post_filter, post_filt_size, merge_algo, merge_margin, [th], bg_dl_thresh,))
         t.start()
         t_id += 1
-        time.sleep(60) #  wait 1' to make sure the correct ECV.json file will have been read
+        time.sleep(30) #  wait 30s to make sure the correct ECV.json file will have been read
