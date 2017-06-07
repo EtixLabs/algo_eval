@@ -37,7 +37,7 @@ post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thres
                                 run_counter += 1
                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...")
                                 print("algorithm:%s, resize_factor:%d, alpha:%d, max_detectable_distance:%d, smooth_filt_sz:%s, post_filt_sz:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_sz, ps_sz, thresh))
-                                #~ os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json")
+                                #~ os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
                                 subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
                                 print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finisished") 
 
@@ -64,13 +64,14 @@ post_filter = [1]
 post_filt_size = [7, 15]
 merge_algo = [1]
 merge_margin = [0.1]
-bg_er_thresh = [5, 10, 15, 30]
+bg_er_thresh = [5, 10, 15, 20, 25, 30, 35]
 bg_dl_thresh = [30]
 t_id = 0
 
-for th in bg_er_thresh:
-    t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, alpha, mvt_tolerance, smooth_filter, smooth_filt_size, max_detectable_distance, \
-    min_obj_height, obj_ratio, post_filter, post_filt_size, merge_algo, merge_margin, [th], bg_dl_thresh,))
-    t.start()
-    t_id += 1
-    time.sleep(60) #  wait 1' to make sure the correct ECV.json file will have been read
+for a in alpha:
+    for th in bg_er_thresh:
+        t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, [a], mvt_tolerance, smooth_filter, smooth_filt_size, max_detectable_distance, \
+        min_obj_height, obj_ratio, post_filter, post_filt_size, merge_algo, merge_margin, [th], bg_dl_thresh,))
+        t.start()
+        t_id += 1
+        time.sleep(60) #  wait 1' to make sure the correct ECV.json file will have been read
