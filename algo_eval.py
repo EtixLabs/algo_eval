@@ -6,6 +6,7 @@ from pprint import pprint
 from threading import Thread
 import subprocess
 import time
+import datetime
 
 def run_eval(t_id, algorithm, resize_factor, alpha, mvt_tolerance, smooth_filter, smooth_filt_size, max_detectable_distance, min_obj_height, obj_ratio, \
 post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thresh):
@@ -34,10 +35,11 @@ post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thres
                                 json.dump(data, editted_file, indent=4, sort_keys=True)
                                 editted_file.close()
                                 run_counter += 1
-                                print("Running thread '" + str(t_id) + "', test " + str(run_counter) + "/" + str(total_runs) + "...")
+                                print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...")
                                 print("algorithm:%s, resize_factor:%d, alpha:%d, max_detectable_distance:%d, smooth_filt_sz:%s, post_filt_sz:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_sz, ps_sz, thresh))
                                 #~ os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json")
                                 subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
+                                print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finisished") 
 
 
 base_path = "/home/tanman/work/dev/dcim/cctv/cctv-server/"
