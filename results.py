@@ -10,11 +10,11 @@ import numpy as np
 
 #  User Input
 # ***********
-results_path = "/home/tanman/work/dev/test_samples/eval"
+results_path = "/samples/eval"
 #  Select here the parameter to be used for clustering in color/marker
 #  can be one of {resize_factor, max_detectable_distance, alpha, smooth_filt_size, post_filt_size , bg_er_thresh}:
 color_cluster = "bg_er_thresh"
-marker_cluster = "resize_factor"
+marker_cluster = "max_detectable_distance"
 #  Color and marker palette
 colors = ["r", "g", "b", "k", "c", "m", "y"]
 markers = ["o", "s", "*", "x", "+", "^", "h", "d"]
