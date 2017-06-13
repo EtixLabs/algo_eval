@@ -31,9 +31,8 @@ post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thres
                             for thresh in bg_er_thresh:
                                 data["plugins"]["motion_detection"]["configuration"][algo]["bg_er_thresh"] = thresh
 
-                                editted_file = open(conf_path + "ECV.json", "w")
-                                json.dump(data, editted_file, indent=4, sort_keys=True)
-                                editted_file.close()
+                                with open(conf_path + "ECV.json", "w") as edited_file:
+                                    json.dump(data, edited_file, indent=4, sort_keys=True)
                                 run_counter += 1
                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...")
                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, smooth_filt_sz:%s, post_filt_sz:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_sz, ps_sz, thresh))
@@ -74,4 +73,4 @@ for a in alpha:
         min_obj_height, obj_ratio, post_filter, post_filt_size, merge_algo, merge_margin, [th], bg_dl_thresh,))
         t.start()
         t_id += 1
-        time.sleep(30) #  wait 30s to make sure the correct ECV.json file will have been read
+    time.sleep(30) #  wait 30s to make sure the correct ECV.json file will have been read (TODO: use of mutex http://effbot.org/zone/thread-synchronization.htm)

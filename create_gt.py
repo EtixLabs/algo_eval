@@ -11,7 +11,6 @@ dataset_path = "/samples/CASA/videos/"  # dataset's root directory
 filelist = "/samples/CASA/gt/gt_cam" + str(cam_id).zfill(2) + ".txt"  # list of videos & event frames
 
 # Open file with list of frames with event(s)
-file_cam = open(filelist, "r")
 prefix = "frame_"
 suffix = ".png"
 prefix_len = len(prefix)
@@ -19,19 +18,19 @@ suffix_len = len(suffix)
 videos = collections.defaultdict(list)
 paths = {}
 
-
 # Read file line by line
-for line in file_cam:
-    #  Extract video filename and frame number
-    line = line.strip()
-    parts = line.split(os.sep)
-    sz = len(parts)
-    video_fname = parts[sz-3]  # video_filenmame.mp4
-    fr_name = parts[sz-1]  # frame_xxx.png
-    fr_id = int(fr_name[prefix_len:len(fr_name)-suffix_len])  # extract frame number xxx
-    #  Store event frames for each video file
-    videos[video_fname].append(fr_id)
-    paths[video_fname] = parts
+with open(filelist, "r") as file_cam:
+    for line in file_cam:
+        #  Extract video filename and frame number
+        line = line.strip()
+        parts = line.split(os.sep)
+        sz = len(parts)
+        video_fname = parts[sz-3]  # video_filenmame.mp4
+        fr_name = parts[sz-1]  # frame_xxx.png
+        fr_id = int(fr_name[prefix_len:len(fr_name)-suffix_len])  # extract frame number xxx
+        #  Store event frames for each video file
+        videos[video_fname].append(fr_id)
+        paths[video_fname] = parts
 
 # Loop over all videos
 for key in videos.keys():
@@ -87,16 +86,16 @@ for key in videos.keys():
         path = path + path_parts[i] + os.sep
     gt_fname = key[:-3] + "txt"
     # Create file at the same directory as the video file
-    gt_file = open(path + gt_fname, "w")
-    # Format ground truth as: START_FRAME END_FRAME DURATION
-    prev_val = seqfill[0]
-    start = seqfill[0]
-    for val in seqfill:
-        jump = val - prev_val
-        if jump > 1:  # a new block of frames (a new event) starts here. Write line with the previous event start, end and duration data.
-            end = prev_val
-            gt_file.write(str(start) + " " + str(end) + " " + str(end-start+1) + "\n")
-            start = val
-        prev_val = val
-    end = val
-    gt_file.write(str(start) + " " + str(end) + " " + str(end-start+1) + "\n")
+    # Format of ground truth is: START_FRAME END_FRAME DURATION
+    with open(path + gt_fname, "w") as gt_file:
+        prev_val = seqfill[0]
+        start = seqfill[0]
+        for val in seqfill:
+            jump = val - prev_val
+            if jump > 1:  # a new block of frames (a new event) starts here. Write line with the previous event start, end and duration data.
+                end = prev_val
+                gt_file.write(str(start) + " " + str(end) + " " + str(end-start+1) + "\n")
+                start = val
+            prev_val = val
+        end = val
+        gt_file.write(str(start) + " " + str(end) + " " + str(end-start+1) + "\n")

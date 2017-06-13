@@ -16,12 +16,12 @@ new_gt = []
 
 
 def load_gt(gt_path):
-    gt_file = open(gt_path, 'r')
-    gt_fnames = []
-    for line in gt_file:
-        line = line.strip()
-        gt_fnames.append(line)
-    print("loaded " + str(len(gt_fnames)) + " gt frames")
+    with open(gt_path, 'r') as gt_file:
+        gt_fnames = []
+        for line in gt_file:
+            line = line.strip()
+            gt_fnames.append(line)
+        print("loaded " + str(len(gt_fnames)) + " gt frames")
     return gt_fnames
 
 
@@ -154,7 +154,6 @@ window.mainloop()
 
 #~ print(gt_fnames)
 
-file_cam_gt = open(output_filename, "w+")
-for fname in gt_fnames:
-    file_cam_gt.write(fname + "\n")
-file_cam_gt.close()
+with open(output_filename, "w+") as file_cam_gt:
+    for fname in gt_fnames:
+        file_cam_gt.write(fname + "\n")
