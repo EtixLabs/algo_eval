@@ -43,9 +43,7 @@ post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thres
                                 print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished")
 
 
-#~ base_path = "/home/tanman/work/dev/dcim/cctv/cctv-server/"
-#~ eval_path = base_path + "build-release/tests/"
-#~ conf_path = base_path + "deployment/conf/"
+
 if len(sys.argv) < 3:
     print("Not enought input arguments. \nPlease provide the full path to ecv_algo_eval binary as first argument and the full path to the configuration file as a second argument.")
     print("Example: python3 algo_eval.py /cctv/tests/ /conf/")
