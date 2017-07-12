@@ -45,8 +45,8 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
                                                 run_counter += 1
                                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...")
                                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, smooth_filter:%d, smooth_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_filt, sm_sz, ps_filt, ps_sz, merge, merge_mrg, thresh))
-                                                os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json > log.txt")
-                                                # os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
+                                                os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
+                                                # os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json > log.txt")
                                                 # subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
                                                 print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished")
 
