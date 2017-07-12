@@ -45,8 +45,8 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
                                                 run_counter += 1
                                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...")
                                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, smooth_filter:%d, smooth_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_filt, sm_sz, ps_filt, ps_sz, merge, merge_mrg, thresh))
-                                                # os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json")
-                                                os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
+                                                os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json > log.txt")
+                                                # os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
                                                 # subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
                                                 print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished")
 
@@ -61,6 +61,7 @@ else:
     conf_path = sys.argv[2]
 
 data = []
+print(conf_path + "ECV.json")
 with open(conf_path + "ECV.json", "r") as data_file:
     text = data_file.read()
     data = json.loads(text)
@@ -84,8 +85,8 @@ t_id = 0
 
 for a in alpha:
     for th in bg_er_thresh:
+        t_id += 1
         t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio, \
         smooth_filter, smooth_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh, bg_dl_thresh,))
         t.start()
-        t_id += 1
         time.sleep(10) #  wait to make sure the correct ECV.json file will have been read (TODO: use of mutex http://effbot.org/zone/thread-synchronization.htm)
