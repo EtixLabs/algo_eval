@@ -43,26 +43,24 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
                                                 with open(conf_path + "ECV.json", "w") as edited_file:
                                                     json.dump(data, edited_file, indent=4, sort_keys=True)
                                                 run_counter += 1
-                                                print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...")
-                                                print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, smooth_filter:%d, smooth_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_filt, sm_sz, ps_filt, ps_sz, merge, merge_mrg, thresh))
-                                                # os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json >/dev/null 2>&1")
-                                                # os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json")
-                                                os.system(eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json > log" + str(t_id) + "_" + str(run_counter) + ".txt")
-                                                # subprocess.run(["xterm", "-e", eval_path + "ecv_algo_eval " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
-                                                print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished")
-
+                                                print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...", flush=True)
+                                                print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, smooth_filter:%d, smooth_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_er_thresh:%d" % (algo, rsz, a, max_dist, sm_filt, sm_sz, ps_filt, ps_sz, merge, merge_mrg, thresh), flush=True)
+                                                # os.system(eval_path + " " + conf_path + "ECV_tools.json >/dev/null 2>&1")
+                                                # os.system(eval_path + " " + conf_path + "ECV_tools.json")
+                                                os.system(eval_path + " " + conf_path + "ECV_tools.json > log" + str(t_id) + "_" + str(run_counter) + ".txt")
+                                                # subprocess.run(["xterm", "-e", eval_path + " " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
+                                                print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished", flush=True)
 
 
 if len(sys.argv) < 3:
-    print("Not enought input arguments. \nPlease provide the full path to ecv_algo_eval binary as first argument and the full path to the configuration file as a second argument.")
-    print("Example: python3 algo_eval.py /cctv/tests/ /conf/")
+    print("Not enough input arguments. \nPlease provide the full path to ecv_algo_eval binary as first argument and the full path to the configuration folder as a second argument.")
+    print("Example: python3 algo_eval.py /cctv/tests/ecv_algo_eval /conf/")
     sys.exit()
 else:
     eval_path = sys.argv[1]
     conf_path = sys.argv[2]
 
 data = []
-print(conf_path + "ECV.json")
 with open(conf_path + "ECV.json", "r") as data_file:
     text = data_file.read()
     data = json.loads(text)
