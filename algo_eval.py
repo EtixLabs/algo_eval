@@ -18,26 +18,26 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
     len(merge_margin) * len(bg_er_thresh) * len(bg_dl_thresh)
 
     for algo in algorithm:
-        data["plugins"]["motion_detection"]["algorithm"] = algo
         for rsz in resize_factor:
-            data["plugins"]["motion_detection"]["configuration"]["resize_factor"] = rsz
             for a in alpha:
-                data["plugins"]["motion_detection"]["configuration"]["alpha"] = a
-                for max_dist in max_detectable_distance:
-                    data["plugins"]["motion_detection"]["configuration"]["max_detectable_distance"] = max_dist
-                    for sm_filt in smooth_filter:
-                        data["plugins"]["motion_detection"]["configuration"]["smooth_filter"] = sm_filt
-                        for sm_sz in smooth_filt_size:
-                            data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"] = sm_sz
-                            for ps_filt in post_filter:
-                                data["plugins"]["motion_detection"]["configuration"]["post_filter"] = ps_filt
-                                for ps_sz in post_filt_size:
-                                    data["plugins"]["motion_detection"]["configuration"]["post_filt_size"] = ps_sz
+                for sm_filt in smooth_filter:
+                    for sm_sz in smooth_filt_size:
+                        for ps_filt in post_filter:
+                            for ps_sz in post_filt_size:
+                                for max_dist in max_detectable_distance:
                                     for merge in merge_algo:
-                                        data["plugins"]["motion_detection"]["configuration"]["merge_algo"] = merge
                                         for merge_mrg in merge_margin:
-                                            data["plugins"]["motion_detection"]["configuration"]["merge_margin"] = merge_mrg
                                             for thresh in bg_er_thresh:
+                                                data["plugins"]["motion_detection"]["algorithm"] = algo
+                                                data["plugins"]["motion_detection"]["configuration"]["resize_factor"] = rsz
+                                                data["plugins"]["motion_detection"]["configuration"]["alpha"] = a
+                                                data["plugins"]["motion_detection"]["configuration"]["max_detectable_distance"] = max_dist
+                                                data["plugins"]["motion_detection"]["configuration"]["smooth_filter"] = sm_filt
+                                                data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"] = sm_sz
+                                                data["plugins"]["motion_detection"]["configuration"]["post_filter"] = ps_filt
+                                                data["plugins"]["motion_detection"]["configuration"]["post_filt_size"] = ps_sz
+                                                data["plugins"]["motion_detection"]["configuration"]["merge_algo"] = merge
+                                                data["plugins"]["motion_detection"]["configuration"]["merge_margin"] = merge_mrg
                                                 data["plugins"]["motion_detection"]["configuration"][algo]["bg_er_thresh"] = thresh
 
                                                 with open(conf_path + "ECV.json", "w") as edited_file:
@@ -66,7 +66,7 @@ with open(conf_path + "ECV.json", "r") as data_file:
     data = json.loads(text)
 
 algorithm = ["adaptive_average"]
-resize_factor = [2, 3]
+resize_factor = [3, 2]
 alpha = [0.025, 0.05, 0.1]
 max_detectable_distance = [25, 50, 75, 100]
 mvt_tolerance = [0]
