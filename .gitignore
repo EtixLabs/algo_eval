@@ -1,4 +1,5 @@
 # python compiled files
 *.pyc
 *.ods
+log*.txt
 logs/*
