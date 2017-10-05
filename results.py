@@ -1,29 +1,28 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
-from pprint import pprint
-import matplotlib.pyplot as plt
 import json
 import csv
+import matplotlib.pyplot as plt
 import numpy as np
 
 
 #  User Input
 # ***********
-results_path = "/home/tanman/work/dev/test_samples/eval/"
-#~ results_path = "/home/tanman/work/dev/test_samples/eval_valid"
-#~ results_path = "/home/tanman/work/dev/test_samples/eval_testing"
+RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/"
+#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval_valid"
+#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval_testing"
 
 #  Select here the parameter to be used for clustering in color/marker
 #  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:
-color_cluster = "thresh"
-marker_cluster = "alpha"
+COLOR_CLUSTER = "thresh"
+MARKER_CLUSTER = "alpha"
 #  Color and marker palette
-colors = ["r", "g", "b", "k", "c", "m", "y"]
-markers = ["o", "s", "*", "x", "+", "^", "h", "d"]
+COLORS = ["r", "g", "b", "k", "c", "m", "y"]
+MARKERS = ["o", "s", "*", "x", "+", "^", "h", "d"]
 
 # Flag to control the plotting of FPS histograms
-plot_fps = False
+PLOT_FPS = False
 
 #  Variables Declaration
 # **********************
@@ -67,7 +66,7 @@ cluster["thresh"] = thresh
 
 #  Parse results
 # **************
-for root, dirs, files in os.walk(results_path):
+for root, dirs, files in os.walk(RESULTS_PATH):
     dirs.sort()
     if len(files) >= 3:  #  we expect to have at least 3 files: ECV.json, ECV_tools.json and eval_motion_detection.txt
         folders.append(os.path.split(root)[-1])
@@ -141,7 +140,7 @@ rows = zip(["Frames"]+Frames, ["TP"]+TP, ["TN"]+TN, ["FP"]+FP, ["FN"]+FN, ["HR"]
 ["Runtime"]+Runtime, ["algorithm"]+algo, ["resize_factor"]+rsz, ["alpha"]+alpha, ["max_detectable_distance"]+dist, \
 ["pre_filter"]+pre_filt, ["pre_filt_sz"]+pre_sz, ["post_filter"]+post_filt, ["post_filt_sz"]+post_sz, \
 ["merge"]+merge, ["merge_margin"]+merge_mrg, ["thresh"]+thresh, ["folder"]+folders[0:])
-with open(os.path.join(results_path, "results.csv"), "w") as results_file:
+with open(os.path.join(RESULTS_PATH, "results.csv"), "w") as results_file:
     writer = csv.writer(results_file)
     for row in rows:
         writer.writerow(row)
@@ -155,8 +154,8 @@ rt_array = np.array(Runtime)
 fr_array = np.array(Frames)
 fps = np.round(fr_array / rt_array)
 
-color_mask = np.array(cluster[color_cluster])
-marker_mask = np.array(cluster[marker_cluster])
+color_mask = np.array(cluster[COLOR_CLUSTER])
+marker_mask = np.array(cluster[MARKER_CLUSTER])
 size_mask = fps
 
 roc = plt.figure(1)
@@ -165,13 +164,13 @@ for i, col_val in enumerate(sorted(set(color_mask))):
     yc = y[color_mask == col_val]
     color_marker_mask = marker_mask[color_mask == col_val]
     size = size_mask[color_mask == col_val]
-    c = colors[i%len(colors)]
+    c = COLORS[i%len(COLORS)]
     for j, mark_val in enumerate(sorted(set(marker_mask))):
         xcm = xc[color_marker_mask == mark_val]
         ycm = yc[color_marker_mask == mark_val]
         s = size[color_marker_mask == mark_val]
-        m = markers[j%len(markers)]
-        plt.scatter(xcm, ycm, s=5*(s-min(fps))+20, marker=m, c=c, alpha=0.5, label=color_cluster+"="+str(col_val)+", "+marker_cluster+"="+str(mark_val))
+        m = MARKERS[j%len(MARKERS)]
+        plt.scatter(xcm, ycm, s=5*(s-min(fps))+20, marker=m, c=c, alpha=0.5, label=COLOR_CLUSTER+"="+str(col_val)+", "+MARKER_CLUSTER+"="+str(mark_val))
 plt.legend(loc="lower right")
 plt.title("ROC curve (" + str(len(HR)) + " tests)")
 plt.xlabel("FPR (%)")
@@ -181,7 +180,7 @@ plt.axis([0, plt.xlim()[1], 0, 110])
 #~ plt.axis([0, 10, 40, 100])
 
 # Plot histograms with information about the algorithm's speed
-if plot_fps:
+if PLOT_FPS:
 
     bin_sz = 1
     bins = int(max(fps)/bin_sz)

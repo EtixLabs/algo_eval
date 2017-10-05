@@ -1,25 +1,24 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import collections
 import os.path
 
 # input parameters
-cam_id = 1
-tolerance = 100  # merge events being apart less or equal than this number of frames
-print_flag = False  # if False, avoid printing
-dataset_path = "/samples/CASA/videos/"  # dataset's root directory
-filelist = "/samples/CASA/gt/gt_cam" + str(cam_id).zfill(2) + ".txt"  # list of videos & event frames
+CAM_ID = 1
+TOLERANCE = 100  # merge events being apart less or equal than this number of frames
+PRINT_FLAG = False  # if False, avoid printing
+DATASET_PATH = "/samples/CASA/videos/"  # dataset's root directory
+FILELIST = "/samples/CASA/gt/gt_cam" + str(CAM_ID).zfill(2) + ".txt"  # list of videos & event frames
+PREFIX = "frame_"
+SUFFIX = ".png"
 
 # Open file with list of frames with event(s)
-prefix = "frame_"
-suffix = ".png"
-prefix_len = len(prefix)
-suffix_len = len(suffix)
+prefix_len = len(PREFIX)
+suffix_len = len(SUFFIX)
 videos = collections.defaultdict(list)
 paths = {}
-
-# Read file line by line
-with open(filelist, "r") as file_cam:
+with open(FILELIST, "r") as file_cam:
+    # Read file line by line
     for line in file_cam:
         #  Extract video filename and frame number
         line = line.strip()
@@ -38,14 +37,14 @@ for key in videos.keys():
     frame_seq = videos[key]
     #  numerically sort, in case alphabetically sorting had frame 50 after 101...
     frame_seq.sort()
-    if print_flag:
+    if PRINT_FLAG:
         print("*******************************************")
         print("* " + key + " (sorted) *")
         print("*******************************************")
         print(frame_seq)
         print()
 
-    # Loop over event frames and remove isolated frames and fill gap between blocks of frames with distance < tolerance
+    # Loop over event frames and remove isolated frames and fill gap between blocks of frames with distance < TOLERANCE
     idx = 0
     prev_val = -1
     next_val = frame_seq[len(frame_seq)-1]
@@ -57,30 +56,30 @@ for key in videos.keys():
             next_dif = next_val - val - 1
         if missing > 0:  # we have a frame jump
             if prev_val >= 0:
-                if print_flag:
+                if PRINT_FLAG:
                     print("prev_val->val: " + str(prev_val) + "->" + str(val) + " missing frames: " + str(missing))
-            if (missing > tolerance) and (next_dif > tolerance):
+            if (missing > TOLERANCE) and (next_dif > TOLERANCE):
                 seqfill.remove(val)
-                if print_flag:
-                    print("removed " + str(val) + " because missing frames before=" + str(missing) + ", missing frames after=" + str(next_dif) + " and tolerance=" + str(tolerance))
+                if PRINT_FLAG:
+                    print("removed " + str(val) + " because missing frames before=" + str(missing) + ", missing frames after=" + str(next_dif) + " and tolerance=" + str(TOLERANCE))
                     print(seqfill)
-            elif (missing <= tolerance):
+            elif (missing <= TOLERANCE):
                 for i in range(1, missing+1):
                     seqfill.append(prev_val+i)
                     seqfill.sort()
-                    if print_flag:
-                        print("added " + str(prev_val+i) + " because missing frames=" + str(missing) + " and tolerance=" + str(tolerance))
-                if print_flag:
+                    if PRINT_FLAG:
+                        print("added " + str(prev_val+i) + " because missing frames=" + str(missing) + " and tolerance=" + str(TOLERANCE))
+                if PRINT_FLAG:
                     print(seqfill)
         prev_val = val
         idx = idx + 1
-    if print_flag:
+    if PRINT_FLAG:
         print("final filtered 'event' frames:")
         print(seqfill)
         print()
 
     # Write ground truth file
-    path = dataset_path
+    path = DATASET_PATH
     path_parts = paths[key]
     for i in range(0, len(path_parts)-3):
         path = path + path_parts[i] + os.sep

@@ -1,21 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
 import json
-from pprint import pprint
 from threading import Thread
 import subprocess
 import time
 import datetime
 
-def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio, \
-        pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, bg_thresh):
+
+def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio,
+             pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, bg_thresh):
 
     run_counter = 0
-    total_runs = len(algorithm) * len(resize_factor) * len(alpha) * len(mvt_tolerance) * len(pre_filter) * len(pre_filt_size) * \
-    len(max_detectable_distance) * len(min_obj_height) * len(obj_ratio) * len(post_filter) * len(post_filt_size) * len(merge_algo) * \
-    len(merge_margin) * len(bg_thresh)
+    total_runs = (len(algorithm) * len(resize_factor) * len(alpha) * len(mvt_tolerance) * len(pre_filter) * len(pre_filt_size) *
+                  len(max_detectable_distance) * len(min_obj_height) * len(obj_ratio) * len(post_filter) * len(post_filt_size) *
+                  len(merge_algo) * len(merge_margin) * len(bg_thresh))
 
     for algo in algorithm:
         for rsz in resize_factor:
@@ -40,15 +40,15 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
                                                 data["plugins"]["motion_detection"]["configuration"]["merge_margin"] = merge_mrg
                                                 data["plugins"]["motion_detection"]["configuration"]["bg_thresh"] = thresh
 
-                                                with open(conf_path + "ECV.json", "w") as edited_file:
+                                                with open(CONF_PATH + "ECV.json", "w") as edited_file:
                                                     json.dump(data, edited_file, indent=4, sort_keys=True)
                                                 run_counter += 1
                                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...", flush=True)
                                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, pre_filter:%d, pre_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_thresh:%d" % (algo, rsz, a, max_dist, pr_filt, pr_sz, ps_filt, ps_sz, merge, merge_mrg, thresh), flush=True)
-                                                # os.system(eval_path + " " + conf_path + "ECV_tools.json >/dev/null 2>&1")
-                                                # os.system(eval_path + " " + conf_path + "ECV_tools.json")
-                                                os.system(eval_path + " " + conf_path + "ECV_tools.json > log" + str(t_id) + "_" + str(run_counter) + ".txt")
-                                                # subprocess.run(["xterm", "-e", eval_path + " " + conf_path + "ECV_tools.json"], stdout=subprocess.PIPE)
+                                                # os.system(EVAL_PATH + " " + CONF_PATH + "ECV_tools.json >/dev/null 2>&1")
+                                                # os.system(EVAL_PATH + " " + CONF_PATH + "ECV_tools.json")
+                                                os.system(EVAL_PATH + " " + CONF_PATH + "ECV_tools.json > log" + str(t_id) + "_" + str(run_counter) + ".txt")
+                                                # subprocess.run(["xterm", "-e", EVAL_PATH + " " + CONF_PATH + "ECV_tools.json"], stdout=subprocess.PIPE)
                                                 print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished", flush=True)
 
 
@@ -57,11 +57,11 @@ if len(sys.argv) < 3:
     print("Example: python3 algo_eval.py /cctv/tests/ecv_algo_eval /conf/")
     sys.exit()
 else:
-    eval_path = sys.argv[1]
-    conf_path = sys.argv[2]
+    EVAL_PATH = sys.argv[1]
+    CONF_PATH = sys.argv[2]
 
 data = []
-with open(conf_path + "ECV.json", "r") as data_file:
+with open(CONF_PATH + "ECV.json", "r") as data_file:
     text = data_file.read()
     data = json.loads(text)
 
@@ -73,7 +73,7 @@ mvt_tolerance = [0]
 min_obj_height = [1.6]
 obj_ratio = [0.41]
 pre_filter = [1]
-pre_filt_size =[7, 15]
+pre_filt_size = [7, 15]
 post_filter = [1]
 post_filt_size = [7, 15]
 merge_algo = [1]
@@ -84,7 +84,7 @@ t_id = 0
 for a in alpha:
     for th in bg_thresh:
         t_id += 1
-        t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, [a], max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio, \
-        pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, [th]))
+        t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, [a], max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio,
+                   pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, [th]))
         t.start()
-        time.sleep(1) #  wait to make sure the correct ECV.json file will have been read (TODO: use of mutex http://effbot.org/zone/thread-synchronization.htm)
+        time.sleep(1)  # wait to make sure the correct ECV.json file will have been read (TODO: use of mutex http://effbot.org/zone/thread-synchronization.htm)
