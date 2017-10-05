@@ -11,13 +11,12 @@ import numpy as np
 #  User Input
 # ***********
 results_path = "/home/tanman/work/dev/test_samples/eval/"
-#~ results_path = "/home/tanman/work/dev/test_samples/eval/eval_CASA_cam01+03+04+05"
 #~ results_path = "/home/tanman/work/dev/test_samples/eval_valid"
 #~ results_path = "/home/tanman/work/dev/test_samples/eval_testing"
 
 #  Select here the parameter to be used for clustering in color/marker
-#  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, smooth_filter, smooth_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, bg_er_thresh}:
-color_cluster = "bg_er_thresh"
+#  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:
+color_cluster = "thresh"
 marker_cluster = "alpha"
 #  Color and marker palette
 colors = ["r", "g", "b", "k", "c", "m", "y"]
@@ -44,8 +43,8 @@ algo = []
 rsz = []
 alpha = []
 dist = []
-sm_filt = []
-sm_sz = []
+pre_filt = []
+pre_sz = []
 post_filt = []
 post_sz = []
 merge = []
@@ -57,13 +56,13 @@ cluster["algorithm"] = algo
 cluster["resize_factor"] = rsz
 cluster["max_detectable_distance"] = dist
 cluster["alpha"] = alpha
-cluster["smooth_filter"] = sm_filt
-cluster["smooth_filt_size"] = sm_sz
+cluster["pre_filter"] = pre_filt
+cluster["pre_filt_sz"] = pre_sz
 cluster["post_filter"] = post_filt
-cluster["post_filt_size"] = post_sz
+cluster["post_filt_sz"] = post_sz
 cluster["merge_algo"] = merge
 cluster["merge_margin"] = merge_mrg
-cluster["bg_er_thresh"] = thresh
+cluster["thresh"] = thresh
 
 
 #  Parse results
@@ -121,8 +120,8 @@ for root, dirs, files in os.walk(results_path):
                     rsz.append(data["plugins"]["motion_detection"]["configuration"]["resize_factor"])
                     alpha.append(data["plugins"]["motion_detection"]["configuration"]["alpha"])
                     dist.append(data["plugins"]["motion_detection"]["configuration"]["max_detectable_distance"])
-                    sm_filt.append(data["plugins"]["motion_detection"]["configuration"]["smooth_filter"])
-                    sm_sz.append(data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"])
+                    pre_filt.append(data["plugins"]["motion_detection"]["configuration"]["smooth_filter"])
+                    pre_sz.append(data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"])
                     post_filt.append(data["plugins"]["motion_detection"]["configuration"]["post_filter"])
                     post_sz.append(data["plugins"]["motion_detection"]["configuration"]["post_filt_size"])
                     merge.append(data["plugins"]["motion_detection"]["configuration"]["merge_algo"])
@@ -140,8 +139,8 @@ for root, dirs, files in os.walk(results_path):
 # *****************************
 rows = zip(["Frames"]+Frames, ["TP"]+TP, ["TN"]+TN, ["FP"]+FP, ["FN"]+FN, ["HR"]+HR, ["FPR"]+FPR, ["Acc"]+Acc, ["Pre"]+Pre,["F1"]+F1, \
 ["Runtime"]+Runtime, ["algorithm"]+algo, ["resize_factor"]+rsz, ["alpha"]+alpha, ["max_detectable_distance"]+dist, \
-["smooth_filter"]+sm_filt, ["smooth_filt_size"]+sm_sz, ["post_filter"]+post_filt, ["post_filt_size"]+post_sz, \
-["merge"]+merge, ["merge_margin"]+merge_mrg, ["bg_er_thresh"]+thresh, ["folder"]+folders[0:])
+["pre_filter"]+pre_filt, ["pre_filt_sz"]+pre_sz, ["post_filter"]+post_filt, ["post_filt_sz"]+post_sz, \
+["merge"]+merge, ["merge_margin"]+merge_mrg, ["thresh"]+thresh, ["folder"]+folders[0:])
 with open(os.path.join(results_path, "results.csv"), "w") as results_file:
     writer = csv.writer(results_file)
     for row in rows:
@@ -179,16 +178,16 @@ plt.xlabel("FPR (%)")
 plt.ylabel("HR (%)")
 plt.grid(True)
 plt.axis([0, plt.xlim()[1], 0, 110])
+#~ plt.axis([0, 10, 40, 100])
 
 # Plot histograms with information about the algorithm's speed
 if plot_fps:
-    for x_, y_, fps_ in np.broadcast(x, y, fps):
-        plt.annotate(fps_, (x_,y_))
 
-    bin_sz = 20
+    bin_sz = 1
     bins = int(max(fps)/bin_sz)
 
-    speed_algo = plt.figure(2)
+    # FPS histogram split based on MD algo variant
+    speed_algo = plt.figure()
     plt.title("FPS histogram (algo split)")
     plt.xlabel("FPS")
     algo_array = np.array(algo)
@@ -196,7 +195,8 @@ if plot_fps:
     plt.hist(fps_algo, bins, histtype="barstacked", label=["gray", "color_fusion"])
     plt.legend(loc="upper right")
 
-    speed_rsz = plt.figure(3)
+    # FPS histogram split based on resize factor
+    speed_rsz = plt.figure()
     plt.title("FPS histogram (resize split)")
     plt.xlabel("FPS")
     rsz_array = np.array(rsz)
@@ -204,23 +204,71 @@ if plot_fps:
     plt.hist(fps_rsz, bins, histtype="barstacked", label=["rsz=1", "rsz=2", "rsz=3"])
     plt.legend(loc="upper right")
 
-    speed_sm_filt = plt.figure(4)
+    # FPS histogram split based on type of pre filter
+    speed_pre_filt = plt.figure()
     plt.title("FPS histogram (resize pre filtering)")
     plt.xlabel("FPS")
-    sm_filt_array = np.array(sm_filt)
-    fps_sm_filt = [fps[sm_filt_array == 0], fps[sm_filt_array == 1], fps[sm_filt_array == 2]]
-    plt.hist(fps_sm_filt, bins, histtype="barstacked", label=["none", "gauss", "median"])
+    pre_filt_array = np.array(pre_filt)
+    fps_pre_filt = [fps[pre_filt_array == 0], fps[pre_filt_array == 1], fps[pre_filt_array == 2]]
+    plt.hist(fps_pre_filt, bins, histtype="barstacked", label=["none", "gauss", "median"])
     plt.legend(loc="upper right")
 
-    speed_ps_filt = plt.figure(5)
+    # FPS histogram split based on pre filter size
+    speed_pre_sz = plt.figure()
+    plt.title("FPS histogram (pre filter size)")
+    plt.xlabel("FPS")
+    pre_sz_array = np.array(pre_sz)
+    fps_pre_sz = [fps[pre_sz_array == 7], fps[pre_sz_array == 15]]
+    plt.hist(fps_pre_sz, bins, histtype="barstacked", label=["pre_sz=7", "pre_sz=15"])
+    plt.legend(loc="upper right")
+
+    # FPS histogram split based on type of post filter
+    speed_post_filt = plt.figure()
     plt.title("FPS histogram (resize post filtering)")
     plt.xlabel("FPS")
-    ps_filt_array = np.array(post_filt)
-    fps_ps_filt = [fps[ps_filt_array == 0], fps[ps_filt_array == 1], fps[ps_filt_array == 2]]
-    plt.hist(fps_ps_filt, bins, histtype="barstacked", label=["none", "closing", "median"])
+    post_filt_array = np.array(post_filt)
+    fps_post_filt = [fps[post_filt_array == 0], fps[post_filt_array == 1], fps[post_filt_array == 2]]
+    plt.hist(fps_post_filt, bins, histtype="barstacked", label=["none", "closing", "median"])
     plt.legend(loc="upper right")
 
-    speed = plt.figure(6)
+    # FPS histogram split based on post filter size
+    speed_post_sz = plt.figure()
+    plt.title("FPS histogram (post filter size)")
+    plt.xlabel("FPS")
+    post_sz_array = np.array(post_sz)
+    fps_post_sz = [fps[post_sz_array == 7], fps[post_sz_array == 15]]
+    plt.hist(fps_post_sz, bins, histtype="barstacked", label=["post_sz=7", "post_sz=15"])
+    plt.legend(loc="upper right")
+
+    # FPS histogram split based on maximum detectable distance
+    speed_dist = plt.figure()
+    plt.title("FPS histogram (max detectable distance)")
+    plt.xlabel("FPS")
+    dist_array = np.array(dist)
+    fps_dist = [fps[dist_array == 25], fps[dist_array == 50], fps[dist_array == 75], fps[dist_array == 100]]
+    plt.hist(fps_dist, bins, histtype="barstacked", label=["dist=25", "dist=50", "dist=75", "dist=100"])
+    plt.legend(loc="upper right")
+
+    # FPS histogram split based on alpha parameter (adaptation)
+    speed_alpha = plt.figure()
+    plt.title("FPS histogram (alpha)")
+    plt.xlabel("FPS")
+    alpha_array = np.array(alpha)
+    fps_alpha = [fps[alpha_array == 0.025], fps[alpha_array == 0.05], fps[alpha_array == 0.1]]
+    plt.hist(fps_alpha, bins, histtype="barstacked", label=["alpha=0.025", "alpha=0.05", "alpha=0.1"])
+    plt.legend(loc="upper right")
+
+    # FPS histogram split based on motion threshold
+    speed_thresh = plt.figure()
+    plt.title("FPS histogram (thresh)")
+    plt.xlabel("FPS")
+    thresh_array = np.array(thresh)
+    fps_thresh = [fps[thresh_array == 10], fps[thresh_array == 15], fps[thresh_array == 20], fps[thresh_array == 25], fps[thresh_array == 30], fps[thresh_array == 35], fps[thresh_array == 40]]
+    plt.hist(fps_thresh, bins, histtype="barstacked", label=["thresh=10", "thresh=15", "thresh=20", "thresh=25", "thresh=30", "thresh=35", "thresh=40"])
+    plt.legend(loc="upper right")
+
+    # FPS histogram
+    speed = plt.figure()
     plt.title("FPS histogram")
     plt.xlabel("FPS")
     plt.hist(fps, bins)
