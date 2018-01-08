@@ -14,17 +14,18 @@ def on_click(event):
     #~ artist.set_offset_position('data')
     fpr = artist.get_offsets()[event.ind][0][0]
     hr = artist.get_offsets()[event.ind][0][1]
-    print("hr:  " + str(hr))
-    print("fpr: " + str(fpr))
-    print()
-    
     for index, item in list(enumerate(HR)):
         if ((abs(item - hr) < 0.000001) and (abs(FPR[index] - fpr) < 0.000001)):
-            break
+            break    
+    print("index: " + str(index) + "\n")
+
+    print("Frames: " + str(Frames[index]))
+    print("FPS: " + str(fps[index]))
+    print("HR: " + str(HR[index]))
+    print("FPR: " + str(FPR[index]))
+    print("Accuracy: " + str(Acc[index]))
+    print("F1: " + str(F1[index]) + "\n")
     
-    print("index: " + str(index))
-    print("HR[index]: " + str(HR[index]))
-    print("FPR[index]: " + str(FPR[index]))
     print("algo: " + algo[index])
     print("rsz: " + str(rsz[index]))
     print("alpha: " + str(alpha[index]))
@@ -40,13 +41,12 @@ def on_click(event):
     
 #  User Input
 # ***********
-RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/CASA/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/CASA/CASA_int/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/CASA/CASA_ext/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/STH/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval_valid"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval_testing"
+#~ RESULTS_PATH = "/samples/eval/validation"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_int"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_ext"
+#~ RESULTS_PATH = "/samples/eval/validation/STH"
+RESULTS_PATH = "/samples/eval/testing"
 
 #  Select here the parameter to be used for clustering in color/marker
 #  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:
@@ -163,13 +163,6 @@ plt.axis([0, plt.xlim()[1], 0, 110])
 #~ plt.axis([0, 10, 40, 100])
 fig.canvas.callbacks.connect('pick_event', on_click)
 
-#~ print(str(len(ax.collections)))
-#~ d = ax.collections[0]
-#~ print(d.properties())
-
-#~ d = ax.collections[1]
-#~ d.set_offset_position('data')
-#~ print(d.properties())
 
 # Plot histograms with information about the algorithm's speed
 if PLOT_FPS:

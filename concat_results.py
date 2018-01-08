@@ -10,13 +10,12 @@ from pprint import pprint
 
 #  User Input
 # ***********
-RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/CASA/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/CASA/CASA_int/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/CASA/CASA_ext/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval/STH/"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval_valid"
-#~ RESULTS_PATH = "/home/tanman/work/dev/test_samples/eval_testing"
+#~ RESULTS_PATH = "/samples/eval/validation"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_int"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_ext"
+#~ RESULTS_PATH = "/samples/eval/validation/STH"
+RESULTS_PATH = "/samples/eval/testing"
 
 #  Variables Declaration
 # **********************
