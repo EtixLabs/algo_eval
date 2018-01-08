@@ -41,12 +41,12 @@ def on_click(event):
     
 #  User Input
 # ***********
-#~ RESULTS_PATH = "/samples/eval/validation"
+RESULTS_PATH = "/samples/eval/validation"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_int"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_ext"
 #~ RESULTS_PATH = "/samples/eval/validation/STH"
-RESULTS_PATH = "/samples/eval/testing"
+#~ RESULTS_PATH = "/samples/eval/testing"
 
 #  Select here the parameter to be used for clustering in color/marker
 #  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:

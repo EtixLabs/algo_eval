@@ -10,12 +10,12 @@ from pprint import pprint
 
 #  User Input
 # ***********
-#~ RESULTS_PATH = "/samples/eval/validation"
+RESULTS_PATH = "/samples/eval/validation"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_int"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_ext"
 #~ RESULTS_PATH = "/samples/eval/validation/STH"
-RESULTS_PATH = "/samples/eval/testing"
+#~ RESULTS_PATH = "/samples/eval/testing"
 
 #  Variables Declaration
 # **********************
@@ -115,7 +115,7 @@ thresh.sort()
 
 hist = np.zeros((len(results),len(algo),len(rsz),len(alpha),len(dist),len(pre_filt),len(pre_sz),len(post_filt),len(post_sz),len(merge),len(merge_mrg),len(thresh)), np.int32)
 pprint(np.shape(hist))
-input("Created empty histogram, press Enter to continue...")
+print("Created empty histogram")
 
 iter = 0
 for root, dirs, files in os.walk(RESULTS_PATH):
@@ -167,7 +167,7 @@ for root, dirs, files in os.walk(RESULTS_PATH):
                     #~ else:
                         #~ print("Could not understand metric, skipping line: \'" + line + "\' in folder \'" + root + "\'")
 
-input("Populated histogram, press Enter to continue...")
+print("Populated histogram")
 with open(os.path.join(RESULTS_PATH, "results.csv"), "w") as results_file:
     writer = csv.writer(results_file)
     row = ["Frames", "TP", "TN", "FP", "FN", "HR", "FPR", "Acc", "Pre", "F1", "Runtime", "algorithm", "resize_factor", "alpha", "max_detectable_distance", \
@@ -213,4 +213,3 @@ with open(os.path.join(RESULTS_PATH, "results.csv"), "w") as results_file:
                                                 merge[merge_idx], merge_mrg[merge_mrg_idx], thresh[thresh_idx]]
                                                 #~ pprint(row)
                                                 writer.writerow(row)
-    input("wrote results, press Enter to exit...")
