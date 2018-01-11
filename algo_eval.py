@@ -60,7 +60,7 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
 
                                                 with open(CONF_PATH + ECV_THREAD_SAFE_FILENAME, "w") as edited_file:
                                                     json.dump(data, edited_file, indent=4, sort_keys=True)
-                                                
+
                                                 run_counter += 1
                                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...", flush=True)
                                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, pre_filter:%d, pre_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_thresh:%d" % (algo, rsz, a, max_dist, pr_filt, pr_sz, ps_filt, ps_sz, merge, merge_mrg, thresh), flush=True)
@@ -82,38 +82,38 @@ else:
     ALGO_EVAL = sys.argv[1]
     CONF_FILE = sys.argv[2]
     CONF_PATH = os.path.dirname(CONF_FILE) + "/"
-    CONF_BASENAME = os.path.basename(CONF_FILE)    
+    CONF_BASENAME = os.path.basename(CONF_FILE)
     conf_spl = CONF_BASENAME.split(".")
     conf_base = ""
     for i in range(0, len(conf_spl)-1):
-        conf_base += conf_spl[i] + "."    
+        conf_base += conf_spl[i] + "."
     CONF_BASENAME_NO_EXT = conf_base[:-1]
-    
+
 data = []
 with open(CONF_PATH + "ECV.json", "r") as data_file:
     text = data_file.read()
     data = json.loads(text)
 
 algorithm = ["adaptive_average"]
-resize_factor = [2, 3]
-alpha = [0.025, 0.05, 0.1, 0.15]
+resize_factor = [3]
+alpha = [0.025, 0.05, 0.1, 0.15, 0.2]
 max_detectable_distance = [10, 25, 50, 100]
 mvt_tolerance = [0]
 min_obj_height = [1.6]
 obj_ratio = [0.41]
 pre_filter = [1]
-pre_filt_size = [7, 15]
+pre_filt_size = [15]
 post_filter = [1]
-post_filt_size = [7, 15]
+post_filt_size = [7]
 merge_algo = [1]
 merge_margin = [0.1]
-bg_thresh = [10, 15, 20, 25, 30, 35, 40]
+bg_thresh = [10, 20, 30]
 t_id = 0
 
 for a in alpha:
-    for th in bg_thresh:
+    for dist in max_detectable_distance:
         t_id += 1
-        t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, [a], max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio,
-                   pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, [th]))
+        t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, [a], [dist], mvt_tolerance, min_obj_height, obj_ratio,
+                   pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, bg_thresh))
         t.start()
         time.sleep(10)  # wait to make a copy ECV.json file before the next thread access it.
