@@ -4,9 +4,9 @@ import sys
 import os
 import json
 from threading import Thread
-import subprocess
 import time
 import datetime
+from shutil import copyfile
 
 
 def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio,
@@ -16,6 +16,24 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
     total_runs = (len(algorithm) * len(resize_factor) * len(alpha) * len(mvt_tolerance) * len(pre_filter) * len(pre_filt_size) *
                   len(max_detectable_distance) * len(min_obj_height) * len(obj_ratio) * len(post_filter) * len(post_filt_size) *
                   len(merge_algo) * len(merge_margin) * len(bg_thresh))
+
+    ECV_THREAD_SAFE_FILENAME = "ECV_" + str(t_id) + ".json"
+    copyfile(CONF_PATH + "ECV.json", CONF_PATH + ECV_THREAD_SAFE_FILENAME)
+    ECV_TOOLS_THREAD_SAFE_FILENAME = CONF_BASENAME_NO_EXT  + "_" + str(t_id) + ".json"
+    copyfile(CONF_FILE, CONF_PATH + ECV_TOOLS_THREAD_SAFE_FILENAME)
+    tools_data = []
+    with open(CONF_PATH + ECV_TOOLS_THREAD_SAFE_FILENAME, "r") as tools_data_file:
+        tools_text = tools_data_file.read()
+        tools_data = json.loads(tools_text)
+        tools_data["ECV_conf"] = ECV_THREAD_SAFE_FILENAME
+        OUTPUT_PATH = tools_data["ECV_algo_eval"]["output_path"]
+        if not os.path.exists(OUTPUT_PATH):
+            os.makedirs(OUTPUT_PATH)
+        LOGS_PATH = OUTPUT_PATH + "/logs/"
+        if not os.path.exists(LOGS_PATH):
+            os.makedirs(LOGS_PATH)
+    with open(CONF_PATH + ECV_TOOLS_THREAD_SAFE_FILENAME, "w") as tools_data_file:
+        json.dump(tools_data, tools_data_file, indent=4, sort_keys=True)
 
     for algo in algorithm:
         for rsz in resize_factor:
@@ -40,35 +58,46 @@ def run_eval(t_id, algorithm, resize_factor, alpha, max_detectable_distance, mvt
                                                 data["plugins"]["motion_detection"]["configuration"]["merge_margin"] = merge_mrg
                                                 data["plugins"]["motion_detection"]["configuration"]["bg_thresh"] = thresh
 
-                                                with open(CONF_PATH + "ECV.json", "w") as edited_file:
+                                                with open(CONF_PATH + ECV_THREAD_SAFE_FILENAME, "w") as edited_file:
                                                     json.dump(data, edited_file, indent=4, sort_keys=True)
+                                                
                                                 run_counter += 1
                                                 print("[" + str(datetime.datetime.now()) + "] Running thread " + str(t_id) + ", test " + str(run_counter) + "/" + str(total_runs) + "...", flush=True)
                                                 print("algorithm:%s, resize_factor:%d, alpha:%f, max_detectable_distance:%d, pre_filter:%d, pre_filt_sz:%d, post_filter:%d, post_filt_sz:%d, merge_algo:%d, merge_margin:%d, bg_thresh:%d" % (algo, rsz, a, max_dist, pr_filt, pr_sz, ps_filt, ps_sz, merge, merge_mrg, thresh), flush=True)
-                                                # os.system(EVAL_PATH + " " + CONF_PATH + "ECV_tools.json >/dev/null 2>&1")
-                                                # os.system(EVAL_PATH + " " + CONF_PATH + "ECV_tools.json")
-                                                os.system(EVAL_PATH + " " + CONF_PATH + "ECV_tools.json > log" + str(t_id) + "_" + str(run_counter) + ".txt")
-                                                # subprocess.run(["xterm", "-e", EVAL_PATH + " " + CONF_PATH + "ECV_tools.json"], stdout=subprocess.PIPE)
+                                                # os.system(ALGO_EVAL + " " + CONF_FILE + ECV_TOOLS_THREAD_SAFE_FILENAME + " >/dev/null 2>&1")
+                                                os.system(ALGO_EVAL + " " + CONF_PATH + ECV_TOOLS_THREAD_SAFE_FILENAME + " > " + LOGS_PATH + "log" + str(t_id) + "_" + str(run_counter) + ".txt")
                                                 print("[" + str(datetime.datetime.now()) + "] Thread " + str(t_id) + ", test " + str(run_counter) + " finished", flush=True)
 
+    os.remove(CONF_PATH + ECV_TOOLS_THREAD_SAFE_FILENAME)
+    os.remove(CONF_PATH + ECV_THREAD_SAFE_FILENAME)
 
+#~ **********************
+#~ Start of the program *
+#~ **********************
 if len(sys.argv) < 3:
     print("Not enough input arguments. \nPlease provide the full path to ecv_algo_eval binary as first argument and the full path to the configuration folder as a second argument.")
-    print("Example: python3 algo_eval.py /cctv/tests/ecv_algo_eval /conf/")
+    print("Example: python3 algo_eval.py ~/cctv/bin/algo_eval ~/cctv/conf/ECV_tools.json")
     sys.exit()
 else:
-    EVAL_PATH = sys.argv[1]
-    CONF_PATH = sys.argv[2]
-
+    ALGO_EVAL = sys.argv[1]
+    CONF_FILE = sys.argv[2]
+    CONF_PATH = os.path.dirname(CONF_FILE) + "/"
+    CONF_BASENAME = os.path.basename(CONF_FILE)    
+    conf_spl = CONF_BASENAME.split(".")
+    conf_base = ""
+    for i in range(0, len(conf_spl)-1):
+        conf_base += conf_spl[i] + "."    
+    CONF_BASENAME_NO_EXT = conf_base[:-1]
+    
 data = []
 with open(CONF_PATH + "ECV.json", "r") as data_file:
     text = data_file.read()
     data = json.loads(text)
 
 algorithm = ["adaptive_average"]
-resize_factor = [3, 2]
-alpha = [0.025, 0.05, 0.1]
-max_detectable_distance = [25, 50, 75, 100]
+resize_factor = [2, 3]
+alpha = [0.025, 0.05, 0.1, 0.15]
+max_detectable_distance = [10, 25, 50, 100]
 mvt_tolerance = [0]
 min_obj_height = [1.6]
 obj_ratio = [0.41]
@@ -87,4 +116,4 @@ for a in alpha:
         t = Thread(target=run_eval, args=(t_id, algorithm, resize_factor, [a], max_detectable_distance, mvt_tolerance, min_obj_height, obj_ratio,
                    pre_filter, pre_filt_size, post_filter, post_filt_size, merge_algo, merge_margin, [th]))
         t.start()
-        time.sleep(1)  # wait to make sure the correct ECV.json file will have been read (TODO: use of mutex http://effbot.org/zone/thread-synchronization.htm)
+        time.sleep(10)  # wait to make a copy ECV.json file before the next thread access it.
