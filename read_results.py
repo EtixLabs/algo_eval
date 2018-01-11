@@ -10,12 +10,12 @@ from pprint import pprint
 
 #  User Input
 # ***********
-RESULTS_PATH = "/samples/eval/validation"
+#~ RESULTS_PATH = "/samples/eval/validation"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_int"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_ext"
 #~ RESULTS_PATH = "/samples/eval/validation/STH"
-#~ RESULTS_PATH = "/samples/eval/testing"
+RESULTS_PATH = "/samples/eval/testing"
 
 #  Variables Declaration
 # **********************
@@ -82,13 +82,13 @@ for root, dirs, files in os.walk(RESULTS_PATH): #  explore configuration files a
                 rsz_set.add(data["plugins"]["motion_detection"]["configuration"]["resize_factor"])
                 alpha_set.add(data["plugins"]["motion_detection"]["configuration"]["alpha"])
                 dist_set.add(data["plugins"]["motion_detection"]["configuration"]["max_detectable_distance"])
-                pre_filt_set.add(data["plugins"]["motion_detection"]["configuration"]["smooth_filter"])
-                pre_sz_set.add(data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"])
+                pre_filt_set.add(data["plugins"]["motion_detection"]["configuration"]["pre_filter"])
+                pre_sz_set.add(data["plugins"]["motion_detection"]["configuration"]["pre_filt_size"])
                 post_filt_set.add(data["plugins"]["motion_detection"]["configuration"]["post_filter"])
                 post_sz_set.add(data["plugins"]["motion_detection"]["configuration"]["post_filt_size"])
                 merge_set.add(data["plugins"]["motion_detection"]["configuration"]["merge_algo"])
                 merge_mrg_set.add(data["plugins"]["motion_detection"]["configuration"]["merge_margin"])
-                thresh_set.add(data["plugins"]["motion_detection"]["configuration"][algo_]["bg_er_thresh"])
+                thresh_set.add(data["plugins"]["motion_detection"]["configuration"]["bg_thresh"])
 
 algo = list(algo_set)
 algo.sort()
@@ -135,13 +135,13 @@ for root, dirs, files in os.walk(RESULTS_PATH):
                 rsz_idx = rsz.index(data["plugins"]["motion_detection"]["configuration"]["resize_factor"])
                 alpha_idx = alpha.index(data["plugins"]["motion_detection"]["configuration"]["alpha"])
                 dist_idx = dist.index(data["plugins"]["motion_detection"]["configuration"]["max_detectable_distance"])
-                pre_filt_idx = pre_filt.index(data["plugins"]["motion_detection"]["configuration"]["smooth_filter"])
-                pre_sz_idx = pre_sz.index(data["plugins"]["motion_detection"]["configuration"]["smooth_filt_size"])
+                pre_filt_idx = pre_filt.index(data["plugins"]["motion_detection"]["configuration"]["pre_filter"])
+                pre_sz_idx = pre_sz.index(data["plugins"]["motion_detection"]["configuration"]["pre_filt_size"])
                 post_filt_idx = post_filt.index(data["plugins"]["motion_detection"]["configuration"]["post_filter"])
                 post_sz_idx = post_sz.index(data["plugins"]["motion_detection"]["configuration"]["post_filt_size"])
                 merge_idx = merge.index(data["plugins"]["motion_detection"]["configuration"]["merge_algo"])
                 merge_mrg_idx =merge_mrg.index(data["plugins"]["motion_detection"]["configuration"]["merge_margin"])
-                thresh_idx = thresh.index(data["plugins"]["motion_detection"]["configuration"][algo_]["bg_er_thresh"])
+                thresh_idx = thresh.index(data["plugins"]["motion_detection"]["configuration"]["bg_thresh"])
         
         elif filename.startswith("eval_"): #  parse results' files
             with open(os.path.join(root, filename), "r") as res_file:
