@@ -31,7 +31,7 @@ def on_click(event):
     print("alpha: " + str(alpha[index]))
     print("dist: " + str(dist[index]))
     print("pre_filt: " + str(pre_filt[index]))
-    print("pre_sz: " + str(post_sz[index]))
+    print("pre_sz: " + str(pre_sz[index]))
     print("post_filt: " + str(post_filt[index]))
     print("post_sz: " + str(post_sz[index]))
     print("merge: " + str(merge[index]))
@@ -44,15 +44,47 @@ def on_click(event):
 # ***********
 #~ RESULTS_PATH = "/samples/eval/validation"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_int"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA_ext"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam01"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam03"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam04"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam05"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam12"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam13"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam14"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam15"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam16"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam17"
+#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam18"
 #~ RESULTS_PATH = "/samples/eval/validation/STH"
-RESULTS_PATH = "/samples/eval/testing"
+#~ RESULTS_PATH = "/samples/eval/validation/STH/cam02"
+#~ RESULTS_PATH = "/samples/eval/validation/STH/cam04"
+#~ RESULTS_PATH = "/samples/eval/validation/STH/cam06"
+
+RESULTS_PATH = "/samples/eval/testing"ex
+#~ RESULTS_PATH = "/samples/eval/testing/CASA"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam01"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam03"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam04"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam05"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam12"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam13"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam14"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam15"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam16"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam17"
+#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam18"
+#~ RESULTS_PATH = "/samples/eval/testing/STH"
+#~ RESULTS_PATH = "/samples/eval/testing/STH/cam01"
+#~ RESULTS_PATH = "/samples/eval/testing/STH/cam03"
+#~ RESULTS_PATH = "/samples/eval/testing/STH/cam05"
+#~ RESULTS_PATH = "/samples/eval/testing/STH/cam07"
+
 
 #  Select here the parameter to be used for clustering in color/marker
 #  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:
-COLOR_CLUSTER = "resize_factor"
-MARKER_CLUSTER = "thresh"
+COLOR_CLUSTER = "alpha"
+MARKER_CLUSTER = "resize_factor"
 #  Color and marker palette
 COLORS = ["r", "g", "b", "k", "c", "m", "y"]
 MARKERS = ["o", "s", "*", "x", "+", "^", "h", "d"]
@@ -154,9 +186,9 @@ for i, col_val in enumerate(sorted(set(color_mask))):
         ycm = yc[color_marker_mask == mark_val]
         s = size[color_marker_mask == mark_val]
         m = MARKERS[j%len(MARKERS)]
-        sc = ax.scatter(xcm, ycm, s=5*(s-min(fps))+20, marker=m, c=c, alpha=0.5, label=COLOR_CLUSTER+"="+str(col_val)+", "+MARKER_CLUSTER+"="+str(mark_val), picker=10)
+        sc = ax.scatter(xcm, ycm, s=10*(s-min(fps))+100, marker=m, c=c, alpha=0.5, label=COLOR_CLUSTER+"="+str(col_val)+", "+MARKER_CLUSTER+"="+str(mark_val), picker=10)
 plt.legend(loc="lower right")
-plt.title("ROC curve (" + str(len(HR)) + " tests)")
+plt.title(RESULTS_PATH + ": ROC curve (" + str(len(HR)) + " tests)")
 plt.xlabel("FPR (%)")
 plt.ylabel("HR (%)")
 plt.grid(True)
