@@ -9,11 +9,14 @@ import numpy as np
 
 def on_click(event):
     artist = event.artist
+            
     xmouse, ymouse = event.mouseevent.xdata, event.mouseevent.ydata
     print("mouse click (x, y): (" + str(xmouse) + "," + str(ymouse) + ")")
     #~ artist.set_offset_position('data')
     fpr = artist.get_offsets()[event.ind][0][0]
     hr = artist.get_offsets()[event.ind][0][1]
+    print("fpr: "+str(fpr))
+    print("hr : "+str(hr))
     for index, item in list(enumerate(HR)):
         if ((abs(item - hr) < 0.000001) and (abs(FPR[index] - fpr) < 0.000001)):
             break    
@@ -40,57 +43,47 @@ def on_click(event):
     print("**************************\n")
     
     
+def clear_arrays():
+    Frames.clear()
+    TP.clear()
+    TN.clear()
+    FP.clear()
+    FN.clear()
+    HR.clear()
+    FPR.clear()
+    Acc.clear()
+    Pre.clear()
+    F1.clear()
+    Runtime.clear()
+    algo.clear()
+    rsz.clear()
+    alpha.clear()
+    dist.clear()
+    pre_filt.clear()
+    pre_sz.clear()
+    post_filt.clear()
+    post_sz.clear()
+    merge.clear()
+    merge_mrg.clear()
+    thresh.clear()
+    
 #  User Input
 # ***********
-#~ RESULTS_PATH = "/samples/eval/validation"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam01"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam03"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam04"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam05"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam12"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam13"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam14"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam15"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam16"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam17"
-#~ RESULTS_PATH = "/samples/eval/validation/CASA/cam18"
-#~ RESULTS_PATH = "/samples/eval/validation/STH"
-#~ RESULTS_PATH = "/samples/eval/validation/STH/cam02"
-#~ RESULTS_PATH = "/samples/eval/validation/STH/cam04"
-#~ RESULTS_PATH = "/samples/eval/validation/STH/cam06"
-
-RESULTS_PATH = "/samples/eval/testing"ex
-#~ RESULTS_PATH = "/samples/eval/testing/CASA"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam01"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam03"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam04"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam05"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam12"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam13"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam14"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam15"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam16"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam17"
-#~ RESULTS_PATH = "/samples/eval/testing/CASA/cam18"
-#~ RESULTS_PATH = "/samples/eval/testing/STH"
-#~ RESULTS_PATH = "/samples/eval/testing/STH/cam01"
-#~ RESULTS_PATH = "/samples/eval/testing/STH/cam03"
-#~ RESULTS_PATH = "/samples/eval/testing/STH/cam05"
-#~ RESULTS_PATH = "/samples/eval/testing/STH/cam07"
-
+RESULTS_PATHS = np.array([["/samples/eval/validation/int", "/samples/eval/validation/ext", "/samples/eval/validation"], ["/samples/eval/testing/int", "/samples/eval/testing/ext", "/samples/eval/testing"]])
+#~ RESULTS_PATHS = np.array(["/samples/eval/validation/int", "/samples/eval/validation/ext", "/samples/eval/validation"])
+#~ RESULTS_PATHS = np.array(["/samples/eval/testing/int", "/samples/eval/testing/ext", "/samples/eval/testing"])
 
 #  Select here the parameter to be used for clustering in color/marker
-#  can be one of {algorithm, resize_factor, max_detectable_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:
+#  can be one of {algorithm, resize_factor, max_distance, alpha, pre_filter, pre_filt_sz, post_filter, post_filt_sz, merge_algo, merge_margin, thresh}:
 COLOR_CLUSTER = "alpha"
-MARKER_CLUSTER = "resize_factor"
+MARKER_CLUSTER = "thresh"
 #  Color and marker palette
 COLORS = ["r", "g", "b", "k", "c", "m", "y"]
 MARKERS = ["o", "s", "*", "x", "+", "^", "h", "d"]
 
 # Flag to control the plotting of FPS histograms
 PLOT_FPS = False
+
 
 #  Variables Declaration
 # **********************
@@ -121,7 +114,7 @@ legends = []
 cluster = {}
 cluster["algorithm"] = algo
 cluster["resize_factor"] = rsz
-cluster["max_detectable_distance"] = dist
+cluster["max_distance"] = dist
 cluster["alpha"] = alpha
 cluster["pre_filter"] = pre_filt
 cluster["pre_filt_sz"] = pre_sz
@@ -131,69 +124,89 @@ cluster["merge_algo"] = merge
 cluster["merge_margin"] = merge_mrg
 cluster["thresh"] = thresh
 
+
 #  Parse the results.csv
 # *****************************
-with open(os.path.join(RESULTS_PATH, "results.csv"), "r") as res_file:
-    for line in res_file:
-        line = line.strip()
-        values = line.split(",")
-        if (values[0] == "Frames"): # Ignore (first) header line
-            continue
-        Frames.append(int(values[0]))
-        TP.append(int(values[1]))
-        TN.append(int(values[2]))
-        FP.append(int(values[3]))
-        FN.append(int(values[4]))
-        HR.append(float(values[5]))
-        FPR.append(float(values[6]))
-        Acc.append(float(values[7]))
-        Pre.append(float(values[8]))
-        F1.append(float(values[9]))
-        Runtime.append(int(values[10]))
-        algo.append(values[11])
-        rsz.append(int(values[12]))
-        alpha.append(float(values[13]))
-        dist.append(int(values[14]))
-        pre_filt.append(int(values[15]))
-        pre_sz.append(int(values[16]))
-        post_filt.append(int(values[17]))
-        post_sz.append(int(values[18]))
-        merge.append(int(values[19]))
-        merge_mrg.append(float(values[20]))
-        thresh.append(int(values[21]))
-        
-#  Process and plot the results
-# *****************************
-x = np.array(FPR)
-y = np.array(HR)
-rt_array = np.array(Runtime)
-fr_array = np.array(Frames)
-fps = np.round(fr_array / rt_array)
 
-color_mask = np.array(cluster[COLOR_CLUSTER])
-marker_mask = np.array(cluster[MARKER_CLUSTER])
-size_mask = fps
+#  Define number of subplots
+rows = RESULTS_PATHS.shape[0]
+if (len(RESULTS_PATHS.shape) == 1):
+    RESULTS_PATHS = RESULTS_PATHS.reshape((rows,1))
+cols = RESULTS_PATHS.shape[1]
+fig, ax = plt.subplots(rows,cols,squeeze=False)
 
-fig, ax = plt.subplots()
-for i, col_val in enumerate(sorted(set(color_mask))):
-    xc = x[color_mask == col_val]
-    yc = y[color_mask == col_val]
-    color_marker_mask = marker_mask[color_mask == col_val]
-    size = size_mask[color_mask == col_val]
-    c = COLORS[i%len(COLORS)]
-    for j, mark_val in enumerate(sorted(set(marker_mask))):
-        xcm = xc[color_marker_mask == mark_val]
-        ycm = yc[color_marker_mask == mark_val]
-        s = size[color_marker_mask == mark_val]
-        m = MARKERS[j%len(MARKERS)]
-        sc = ax.scatter(xcm, ycm, s=10*(s-min(fps))+100, marker=m, c=c, alpha=0.5, label=COLOR_CLUSTER+"="+str(col_val)+", "+MARKER_CLUSTER+"="+str(mark_val), picker=10)
+for row in range(rows):
+    for col in range(cols):
+        clear_arrays()
+        #~ result_path = RESULTS_PATHS[row * cols + col]
+        result_path = RESULTS_PATHS[row][col]
+        with open(os.path.join(result_path, "results.csv"), "r") as res_file:
+            for line in res_file:
+                line = line.strip()
+                values = line.split(",")
+                if (values[0] == "Frames"): # Ignore (first) header line
+                    continue
+                Frames.append(int(values[0]))
+                TP.append(int(values[1]))
+                TN.append(int(values[2]))
+                FP.append(int(values[3]))
+                FN.append(int(values[4]))
+                HR.append(float(values[5]))
+                FPR.append(float(values[6]))
+                Acc.append(float(values[7]))
+                Pre.append(float(values[8]))
+                F1.append(float(values[9]))
+                Runtime.append(int(values[10]))
+                algo.append(values[11])
+                rsz.append(int(values[12]))
+                alpha.append(float(values[13]))
+                dist.append(int(values[14]))
+                pre_filt.append(int(values[15]))
+                pre_sz.append(int(values[16]))
+                post_filt.append(int(values[17]))
+                post_sz.append(int(values[18]))
+                merge.append(int(values[19]))
+                merge_mrg.append(float(values[20]))
+                thresh.append(int(values[21]))
+                
+
+        #  Process and plot the results
+        # *****************************
+        x = np.array(FPR)
+        y = np.array(HR)
+        rt_array = np.array(Runtime)
+        fr_array = np.array(Frames)
+        fps = np.round(fr_array / rt_array)
+
+        color_mask = np.array(cluster[COLOR_CLUSTER])
+        marker_mask = np.array(cluster[MARKER_CLUSTER])
+        size_mask = fps
+
+        for i, col_val in enumerate(sorted(set(color_mask))):
+            xc = x[color_mask == col_val]
+            yc = y[color_mask == col_val]
+            color_marker_mask = marker_mask[color_mask == col_val]
+            size = size_mask[color_mask == col_val]
+            c = COLORS[i%len(COLORS)]
+            for j, mark_val in enumerate(sorted(set(marker_mask))):
+                xcm = xc[color_marker_mask == mark_val]
+                ycm = yc[color_marker_mask == mark_val]
+                s = size[color_marker_mask == mark_val]
+                m = MARKERS[j%len(MARKERS)]
+                ax[row,col].scatter(xcm, ycm, s=10*(s-min(fps))+100, marker=m, c=c, alpha=0.5, label=COLOR_CLUSTER+"="+str(col_val)+", "+MARKER_CLUSTER+"="+str(mark_val), picker=10)
+
+        ax[row,col].set_title(result_path + ": ROC curve (" + str(len(HR)) + " tests)")
+        ax[row,col].set_xlabel("FPR (%)")
+        ax[row,col].set_ylabel("HR (%)")
+        ax[row,col].grid(True)
+        #~ ax[row,col].set_xlim([0, ax[row,col].get_xlim()[1]])
+        ax[row,col].set_xlim([0, 20])
+        ax[row,col].set_ylim([0, 100])
+        ax[row,col].set_xticks(np.arange(0, 21, 1))
+        ax[row,col].set_yticks(np.arange(0, 101, 10))
+
 plt.legend(loc="lower right")
-plt.title(RESULTS_PATH + ": ROC curve (" + str(len(HR)) + " tests)")
-plt.xlabel("FPR (%)")
-plt.ylabel("HR (%)")
-plt.grid(True)
-plt.axis([0, plt.xlim()[1], 0, 110])
-#~ plt.axis([0, 10, 40, 100])
+fig.subplots_adjust(left=0.03, right=0.97, bottom=0.03, top=0.97)
 fig.canvas.callbacks.connect('pick_event', on_click)
 
 

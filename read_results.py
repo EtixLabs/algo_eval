@@ -11,6 +11,8 @@ from pprint import pprint
 #  User Input
 # ***********
 #~ RESULTS_PATH = "/samples/eval/validation"
+#~ RESULTS_PATH = "/samples/eval/validation/int"
+#~ RESULTS_PATH = "/samples/eval/validation/ext"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/CASA"
 #~ RESULTS_PATH = "/samples/eval/validation/CASA/cam01"
@@ -30,6 +32,9 @@ from pprint import pprint
 #~ RESULTS_PATH = "/samples/eval/validation/STH/cam06"
 
 RESULTS_PATH = "/samples/eval/testing"
+#~ RESULTS_PATH = "/samples/eval/testing/int"
+#~ RESULTS_PATH = "/samples/eval/testing/ext"
+#~ RESULTS_PATH = "/samples/eval/testing/ext/CASA"
 #~ RESULTS_PATH = "/samples/eval/testing/CASA"
 #~ RESULTS_PATH = "/samples/eval/testing/CASA/cam01"
 #~ RESULTS_PATH = "/samples/eval/testing/CASA/cam03"
